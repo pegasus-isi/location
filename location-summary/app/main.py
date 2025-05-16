@@ -43,7 +43,7 @@ def transform(data):
     if data['organization'] == 'LSUHEALTHSCIENCESCTR':
         data['latitude'] = '29.967'
         data['longitude'] = '-90.053'
-        data['geohash'] = 'w00n'
+        data['geohash'] = '9wh0'
 
     # MGHPCC
     if data['organization'] == 'MGHPCC-AS':
