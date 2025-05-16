@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+. /opt/venv/bin/activate
+
+cd /opt/app
+python3 main.py
