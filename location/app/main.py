@@ -116,7 +116,7 @@ def subdomain(ip):
 
 
 @app.get("/")
-def home(request: Request):
+def home(request: Request, register: bool = True):
 
     # create a base data package
     data = {
@@ -163,7 +163,10 @@ def home(request: Request):
         pass
 
     # also insert into es
-    es(data)
+    if register:
+        es(data)
+    else:
+        log.info("Skipping registering this job on the request of the client")
 
     log.info(data)
 
