@@ -4,6 +4,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
     apt update && apt install -y --no-install-recommends \
         build-essential \
         curl \
+        procps \
         python3-dev \
         python3-pip \
         python3-venv \

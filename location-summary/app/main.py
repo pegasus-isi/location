@@ -39,6 +39,12 @@ def transform(data):
         if 'jetstream' in data['subdomain'].lower():
             data['tags'].append('ACCESS')
 
+    # LSU
+    if data['organization'] == 'LSU':
+        data['latitude'] = '29.967'
+        data['longitude'] = '-90.053'
+        data['geohash'] = '9wh0'
+
     # LSUHEALTHSCIENCESCTR
     if data['organization'] == 'LSUHEALTHSCIENCESCTR':
         data['latitude'] = '29.967'
@@ -69,6 +75,16 @@ def transform(data):
         data['latitude'] = '32.8801'
         data['longitude'] = '-117.2340'        
         data['geohash'] = '9mud'
+    
+    # PSC
+    if data['organization'] == 'PSCNET-HS-TEST-AS':
+        data['latitude'] = '40.450'
+        data['longitude'] = '-79.950'
+        data['geohash'] = 'dqch'
+        if 'bridges' in data['subdomain'].lower():
+            data['tags'].append('ACCESS')
+        if 'neocortex' in data['subdomain'].lower():
+            data['tags'].append('ACCESS')
 
     # Purdue
     if data['organization'] == 'PURDUE' or data['organization'] == 'PURDUE-RESEARCH':
@@ -82,6 +98,14 @@ def transform(data):
     # SDSC
     if data['organization'] == 	'SDSC-AS':
         if 'expanse' in data['subdomain'].lower():
+            data['tags'].append('ACCESS')
+    
+    # TACC
+    if data['organization'] == 	'TACCNET':
+        data['latitude'] = '30.285'
+        data['longitude'] = '-97.733'
+        data['geohash'] = '9v6k'
+        if 'stampede' in data['subdomain'].lower():
             data['tags'].append('ACCESS')
 
     # U Arkansas
@@ -101,6 +125,12 @@ def transform(data):
         data['latitude'] = '47.659'
         data['longitude'] = '-122.305'
         data['geohash'] = 'c23p'
+    
+    # Wisc (BRUWS-AS3128)
+    if data['organization'] == 'BRUWS-AS3128':
+        data['latitude'] = '43.075'
+        data['longitude'] = '-89.417'
+        data['geohash'] = 'dp8m'
 
     # convert tags a string
     if data['tags']:
@@ -124,7 +154,7 @@ def insert(data, day, es_client):
     id = hashlib.sha256(id_string.encode('utf-8')).hexdigest()
 
     index_name = f"aggregated-job-locations-{ts_year}"
-    es_client.index(index=index_name, id=id, document=data, request_timeout=180)
+    es_client.index(index=index_name, id=id, document=data)
 
 
 def process_day(day, es_client):
@@ -205,20 +235,21 @@ if __name__ == "__main__":
 
     es_client = Elasticsearch(
         es_url,
-        basic_auth=(es_user, es_password)
+        basic_auth=(es_user, es_password),
+        request_timeout=500
     )
     
     if not es_client.ping():
         raise Exception(f"Elasticsearch cluster {es_url} is down!")
      
-    # always process the last 5 days
-    for i in range(5):
+    # always process the last 8 days
+    for i in range(8):
         day = datetime.now() - timedelta(days=i)
         process_day(day, es_client)
    
     # and a few random days in the past, to apply any changes to
     # the transformation function
-    for i in range(30):
+    for i in range(10):
         days_ago = random.randint(5, 365*3)
         day = datetime.now() - timedelta(days=i*30)
         process_day(day, es_client)
